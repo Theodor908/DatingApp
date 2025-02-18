@@ -1,36 +1,43 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <div class="container">
-    <a class="navbar-brand" href="#">Dating App</a>
-    @if(accountService.currentUser()){ <!-- user logged in -->
-      <ul class="navbar-nav me-auto mb-2 mb-md-0">
-        <li class="nav-item">
-          <a class="nav-link">Matches</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link">Lists</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link">Messages</a>
-        </li>
-      </ul>
-    }
-    @if(accountService.currentUser()){ <!-- user logged in -->
-      <div dropdown class = "dropdown">
-        <a dropdownToggle class = "dropdown-toggle text-light text-decoration-none">Welcome user!</a>
-        <div *dropdownMenu class = "dropdown-menu">
-          <a class = "dropdown-item">Edit Profile</a>
-          <div class = "dropdown-divider"></div>
-          <a class = "dropdown-item" (click)="logout()">Logout</a>
-        </div>
-      </div>
-    }
 
-    @if(!accountService.currentUser()){ <!-- user not logged in -->
-      <form #loginForm="ngForm" (ngSubmit)="login()" class = "d-flex">
-        <input name = "username" [(ngModel)] = "model.username" class="form-control me-2" placeholder="Username">
-        <input name = "password" [(ngModel)] = "model.password" class="form-control me-2" placeholder="Password" type="password">
-        <button class="btn btn-outline-success" type="submit">Login</button>
-      </form>
-    }
+<!-- to do -->
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-purple">
+  <div class="container">
+    <a class="navbar-brand" routerLink = "/">Bloom</a>
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        @if(accountService.currentUser()){ <!-- user logged in -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink = "/members" routerLinkActive="true">Matches</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink = "/lists" routerLinkActive="true">Lists</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink = "/messages" routerLinkActive="true">Messages</a>
+          </li>
+        }
+      </ul>
+      @if(accountService.currentUser()){ <!-- user logged in -->
+        <div dropdown class="dropdown">
+          <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Welcome {{accountService.currentUser()?.username | titlecase}}</a>
+          <div *dropdownMenu class="dropdown-menu">
+            <a class="dropdown-item">Edit profile</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="logout()">Logout</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item">Something else here</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item">Separated link</a>
+          </div>
+        </div>
+      }
+      @if(!accountService.currentUser()){ <!-- user not logged in -->
+        <form #loginForm="ngForm" (ngSubmit)="login()" class = "d-flex">
+          <input class="form-control me-sm-2 rounded-0" name = "username" [(ngModel)] = "model.username" placeholder="Username">
+          <input class="form-control me-sm-2 rounded-0" name = "password" [(ngModel)] = "model.password" placeholder="Password" type="password">
+          <button class="btn rounded-0 btn-success" type="submit">Login</button>
+        </form>
+      }
     </div>
+  </div>
 </nav>
