@@ -16,6 +16,9 @@
             <a class="nav-link" routerLink = "/messages" routerLinkActive="true">Messages</a>
           </li>
         }
+        <li class="nav-item">
+          <a class="nav-link" routerLink = "/errors" routerLinkActive="true">Errors</a>
+        </li>
       </ul>
       @if(accountService.currentUser()){ <!-- user logged in -->
         <div dropdown class="dropdown">
