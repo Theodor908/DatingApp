@@ -16,6 +16,7 @@ public class AppUser
     public required string Gender { get; set; }
     public required string? Introduction { get; set; }
     public required string? Interests { get; set; }
+    public required string? LookingFor { get; set; } // new parameter
     public required string City { get; set; }
     public required string Country { get; set; }
     public ICollection<Photo> Photos { get; set; } = new List<Photo>();

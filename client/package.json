@@ -22,6 +22,7 @@
     "bootswatch": "^5.3.3",
     "client": "file:",
     "font-awesome": "^4.7.0",
+    "ng-gallery": "^12.0.0",
     "ngx-bootstrap": "^19.0.2",
     "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
