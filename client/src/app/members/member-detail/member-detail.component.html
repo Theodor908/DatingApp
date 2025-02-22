@@ -45,7 +45,7 @@
         <tab heading="Photos" #photoTab="tab"> <!-- tab must be active before showing the gallery -->
           @if(photoTab.active)
           {
-            <gallery [items]="images" class="gallery">
+            <gallery [items]="images" [itemAutosize]="true" class="gallery">
             </gallery>
           }
         </tab>

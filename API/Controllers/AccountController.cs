@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using API.Data;
@@ -40,7 +39,7 @@ public class AccountController(DataContext context, ITokenService tokenService) 
 
     public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
     {
-        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == loginDTO.Username.ToLower());
+        var user = await context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == loginDTO.Username.ToLower());
         
         if(user == null)
         {
@@ -61,7 +60,8 @@ public class AccountController(DataContext context, ITokenService tokenService) 
         return new UserDTO
         {
             Username = user.UserName,
-            Token = tokenService.CreateToken(user)
+            Token = tokenService.CreateToken(user),
+            PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
         };
 
     }

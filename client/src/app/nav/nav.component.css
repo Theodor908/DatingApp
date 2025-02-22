@@ -5,3 +5,9 @@
 {
   background-color: #4e1cbb;
 }
+
+img {
+  max-height: 40px;
+  border: 2px solid white;
+  display: inline;
+}

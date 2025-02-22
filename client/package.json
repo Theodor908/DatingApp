@@ -23,6 +23,8 @@
     "client": "file:",
     "font-awesome": "^4.7.0",
     "ng-gallery": "^12.0.0",
+    "ng2-file-upload": "^8.0.0",
+    "ngx-awesome-uploader": "^19.0.0",
     "ngx-bootstrap": "^19.0.2",
     "ngx-gallery": "^5.10.0",
     "ngx-spinner": "^19.0.0",
