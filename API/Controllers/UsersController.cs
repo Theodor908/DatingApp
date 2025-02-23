@@ -75,6 +75,11 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
             PublicId = result.PublicId
         };
 
+        if(user.Photos.Count == 0) // if the user has no photos set the new photo as main
+        {
+            photo.IsMain = true;
+        }
+
         user.Photos.Add(photo);
 
         if(await userRepository.SaveAllAsync())
