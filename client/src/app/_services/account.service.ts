@@ -4,6 +4,7 @@ import { inject, signal } from '@angular/core';
 import { User } from '../_models/user';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { LikesService } from './likes.service';
 
 
 @Injectable({
@@ -12,6 +13,7 @@ import { environment } from '../../environments/environment';
 export class AccountService {
 
   private http = inject(HttpClient);
+  private likeService = inject(LikesService); // if it is one way it is okay but dont put accountservice in likesservices because of ciruclar dependency
   baseUrl = environment.apiUrl; // <- important to be accurate
   currentUser = signal<User | null>(null);
 
@@ -52,6 +54,7 @@ export class AccountService {
   {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
+    this.likeService.getLikeIds();
   }
 
 }

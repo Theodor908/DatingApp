@@ -8,7 +8,9 @@ import { RegisterComponent } from "../register/register.component";
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  registerMode = false;
+
+registerMode = false;
+memberService: any;
 
   registerToggle()
   {
