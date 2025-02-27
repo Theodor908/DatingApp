@@ -19,5 +19,7 @@ public class AppUser
     public ICollection<Photo> Photos { get; set; } = [];
     public List<UserLike> LikedUsers { get; set; } = [];
     public List<UserLike> LikedByUsers { get; set; } = [];
+    public List<Message> Messages { get; set; } = [];
+    public List<Message> MessagesRecieved { get; set; } = [];
 
 }

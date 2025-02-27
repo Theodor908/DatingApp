@@ -21,7 +21,7 @@ public class UserRespository(DataContext context, IMapper mapper) : IUserReposit
     public async Task<PagedList<MemberDTO>> GetMembersAsync(UserParams userParams)
     {
         var query = context.Users.AsQueryable();
-        query = query.Where(u => u.Id.ToString() != userParams.CurrentUsername);
+        query = query.Where(u => u.UserName != userParams.CurrentUsername);
         if(userParams.Gender != null)
         {
             query = query.Where(u => u.Gender == userParams.Gender);
