@@ -13,16 +13,19 @@ namespace API.Controllers;
 [Authorize]
 public class UsersController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService): BaseAPIController    
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers([FromQuery] UserParams userParams)
     {
+        Console.WriteLine(User.IsInRole("Admin"));
+        Console.WriteLine(User.GetUsername());
         userParams.CurrentUsername = User.GetUsername();
         var users = await userRepository.GetMembersAsync(userParams);
         Response.AddPaginationHeader(users.CurrentPage, users);
         return Ok(users);
     }
-
-    [HttpGet("{username}")] // api/users/3
+    [Authorize(Roles = "Member")]
+    [HttpGet("{username}")] // api/users/username
     public async Task<ActionResult<MemberDTO>> GetUser(string username)
     {
         var user = await userRepository.GetMemberAsync(username);

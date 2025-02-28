@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
 using AutoMapper;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 namespace API.Controllers;
 
-public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseAPIController
+public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : BaseAPIController
 {
     [HttpPost("register")] // account/register
     public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
@@ -19,22 +20,26 @@ public class AccountController(DataContext context, ITokenService tokenService, 
             return BadRequest("Username is required");
         }
 
+        if(registerDTO.Password == null)
+        {
+            return BadRequest("Password is required");
+        }
+
         if(await UserExists(registerDTO.Username)) return BadRequest("Username is taken");
-
-        using var hmax = new HMACSHA512();
-
+        
         var user = mapper.Map<AppUser>(registerDTO);
 
         user.UserName = registerDTO.Username.ToLower();
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
+        var result = await userManager.CreateAsync(user, registerDTO.Password);
+
+        if(result.Succeeded == false) return BadRequest(result.Errors);
 
         return new UserDTO
         {
             Username = user.UserName,
             KnownAs = user.KnownAs,
-            Token = tokenService.CreateToken(user),
+            Token = await tokenService.CreateToken(user),
             Gender = user.Gender
         };
     }
@@ -43,18 +48,25 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
     {
-        var user = await context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.NormalizedUserName == loginDTO.Username.ToUpper());
+        var user = await userManager.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.NormalizedUserName == loginDTO.Username.ToUpper());
         
         if(user == null || user.UserName == null)
         {
             return Unauthorized("Invalid username");
         }
 
+        var result = await userManager.CheckPasswordAsync(user, loginDTO.Password);
+
+        if(result == false)
+        {
+            return Unauthorized("Invalid password");
+        }
+
         return new UserDTO
         {
             Username = user.UserName,
             KnownAs = user.KnownAs,
-            Token = tokenService.CreateToken(user),
+            Token = await tokenService.CreateToken(user),
             Gender = user.Gender,
             PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
         };
@@ -63,6 +75,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     private async Task<bool> UserExists(string username)
     {
-        return await context.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper());
+        return await userManager.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper());
     }
 }
