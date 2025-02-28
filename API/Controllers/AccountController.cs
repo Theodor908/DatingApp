@@ -14,6 +14,10 @@ public class AccountController(DataContext context, ITokenService tokenService, 
     [HttpPost("register")] // account/register
     public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
     {
+        if(registerDTO.Username == null)
+        {
+            return BadRequest("Username is required");
+        }
 
         if(await UserExists(registerDTO.Username)) return BadRequest("Username is taken");
 
@@ -22,8 +26,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
         var user = mapper.Map<AppUser>(registerDTO);
 
         user.UserName = registerDTO.Username.ToLower();
-        user.PasswordHash = hmax.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
-        user.PasswordSalt = hmax.Key;
 
         context.Users.Add(user);
         await context.SaveChangesAsync();
@@ -41,22 +43,11 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
     {
-        var user = await context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == loginDTO.Username.ToLower());
+        var user = await context.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.NormalizedUserName == loginDTO.Username.ToUpper());
         
-        if(user == null)
+        if(user == null || user.UserName == null)
         {
             return Unauthorized("Invalid username");
-        }
-
-        using var hmax = new HMACSHA512(user.PasswordSalt);
-        var computedHash = hmax.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
-
-        for(int i = 0; i < computedHash.Length; i++)
-        {
-            if(computedHash[i] != user.PasswordHash[i])
-            {
-                return Unauthorized("Invalid password");
-            }
         }
 
         return new UserDTO
@@ -72,6 +63,6 @@ public class AccountController(DataContext context, ITokenService tokenService, 
 
     private async Task<bool> UserExists(string username)
     {
-        return await context.Users.AnyAsync(x => x.UserName == username.ToLower());
+        return await context.Users.AnyAsync(x => x.NormalizedUserName == username.ToUpper());
     }
 }
