@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { inject, signal } from '@angular/core';
+import { inject, signal, computed } from '@angular/core';
 import { User } from '../_models/user';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -16,6 +16,15 @@ export class AccountService {
   private likeService = inject(LikesService); // if it is one way it is okay but dont put accountservice in likesservices because of ciruclar dependency
   baseUrl = environment.apiUrl; // <- important to be accurate
   currentUser = signal<User | null>(null);
+  roles = computed(() => {
+    const user = this.currentUser();
+    if(user && user.token)
+    {
+      const role =  JSON.parse(atob(user.token.split('.')[1])).role;
+      return Array.isArray(role) ? role : [role];
+    }
+    return [null];
+  });
 
   login(model: any)
   {
