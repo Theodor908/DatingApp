@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class LikesController(ILikesRepository likesRepository) : BaseAPIController
+public class LikesController(IUnitOfWork unitOfWork) : BaseAPIController
 {
     [HttpPost("{targetUserId:int}")]
     public async Task<ActionResult> ToggleLike(int targetUserId)
@@ -18,7 +18,7 @@ public class LikesController(ILikesRepository likesRepository) : BaseAPIControll
         if(sourceUserId == targetUserId) 
             return BadRequest("You cannot like yourself");
 
-        var existingLike = await likesRepository.GetUserLike(sourceUserId, targetUserId);
+        var existingLike = await unitOfWork.LikesRepository.GetUserLike(sourceUserId, targetUserId);
 
         if(existingLike == null)
         {
@@ -26,14 +26,14 @@ public class LikesController(ILikesRepository likesRepository) : BaseAPIControll
                 SourceUserId = sourceUserId,
                 TargetUserId = targetUserId
             };
-            likesRepository.AddLike(like);
+            unitOfWork.LikesRepository.AddLike(like);
         }
         else
         {
-            likesRepository.DeleteLike(existingLike);
+            unitOfWork.LikesRepository.DeleteLike(existingLike);
         }
 
-        if(await likesRepository.SaveChanges())
+        if(await unitOfWork.Complete())
             return Ok();
 
         return BadRequest("Failed to update like");
@@ -43,7 +43,7 @@ public class LikesController(ILikesRepository likesRepository) : BaseAPIControll
     public async Task<ActionResult<IEnumerable<int>>> GetCurrentUserLikeIds()
     {
         var userId = User.GetUserId();
-        var users = await likesRepository.GetCurentUserLikeIds(userId);
+        var users = await unitOfWork.LikesRepository.GetCurentUserLikeIds(userId);
         return Ok(users);
     }
 
@@ -51,7 +51,7 @@ public class LikesController(ILikesRepository likesRepository) : BaseAPIControll
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUserLikes([FromQuery] LikesParams likesParams)
     {
         likesParams.UserId = User.GetUserId();
-        var users = await likesRepository.GetUserLikes(likesParams);
+        var users = await unitOfWork.LikesRepository.GetUserLikes(likesParams);
         Response.AddPaginationHeader(users.CurrentPage, users);
         return Ok(users);
     }

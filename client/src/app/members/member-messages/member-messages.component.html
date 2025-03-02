@@ -6,7 +6,11 @@
     }
     @else
     {
-      <ul class="chat">
+      <ul class="chat"
+      #scrollMe
+      style="overflow: scroll; max-height: 400px; scroll-behavior: smooth;"
+
+      >
         @for(message of messageService.messageThread(); track message.id)
         {
           <li>

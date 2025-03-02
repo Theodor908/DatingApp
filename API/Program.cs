@@ -18,7 +18,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<PresenceHub>("hubs/presence");
-app.MapHub<MesageHub>("hubs/message");
+app.MapHub<MessageHub>("hubs/message");
 using var scope = app.Services.CreateScope(); // outside dependecy injection
 var services = scope.ServiceProvider;
 try

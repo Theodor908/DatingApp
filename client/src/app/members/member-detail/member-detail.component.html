@@ -5,9 +5,9 @@
         <div class="card-body">
           @if(presenceService.onlineUsers().includes(member.username))
           {
-          <div class="mb-2">
+            <div class="mb-2">
             <i class="fa fa-user-circle text-success">Online now</i>
-          </div>
+            </div>
           }
           <div>
             <strong>Location:</strong>
@@ -27,7 +27,7 @@
           </div>
           <div class="card-footer">
             <div class="btn-group d-flex">
-              <button class="btn btn-primary">Like</button>
+              <button (click)="toggleLike()" class="btn btn-primary">{{hasLiked() ? 'Liked' : 'Like'}}</button>
               <button (click)="selectTab('Messages')" class="btn btn-success">Messages</button>
             </div>
           </div>

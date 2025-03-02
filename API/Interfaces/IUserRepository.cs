@@ -7,7 +7,6 @@ namespace API.Interfaces;
 public interface IUserRepository
 {
     void Update(AppUser user);
-    Task<bool> SaveAllAsync();
     Task<IEnumerable<AppUser>> GetUsersAsync();
         // these can be null
     Task<AppUser?> GetUserByIdAsync(int id);
