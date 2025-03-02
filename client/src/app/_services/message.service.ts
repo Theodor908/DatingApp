@@ -6,6 +6,7 @@ import { PaginatedResult } from '../_models/pagination';
 import { setPaginatedResponse, setPaginationHeaders } from './paginationHelper';
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { User } from '../_models/user';
+import { Group } from '../_models/group';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,19 @@ export class MessageService {
       this.hubConnection.on('NewMessage', message => {
         this.messageThread.update(messages => [...messages, message]);
       });
+
+      this.hubConnection.on('UpdatedGroup', (group : Group) =>{
+        if(group.connections.some(x => x.username === otherUsername))
+        {
+          this.messageThread.update(messages => {
+            messages.forEach(message => {
+              if(!message.dateRead)
+                message.dateRead = new Date(Date.now());
+            });
+            return messages;
+          })
+        }
+      });
     }
 
     stopHubConnection()
@@ -44,7 +58,7 @@ export class MessageService {
         this.hubConnection.stop().catch(error => console.log(error));
       }
     }
-    
+
     getMessages(pageNumber: number, pageSize: number, container: string)
     {
       let params = setPaginationHeaders(pageNumber, pageSize);

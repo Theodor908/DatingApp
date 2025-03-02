@@ -64,11 +64,10 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
     public async Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername)
     {
         var messages = await context.Messages
-        .Include(x => x.Sender).ThenInclude(x => x.Photos)
-        .Include(x => x.Recipient).ThenInclude(x => x.Photos)
         .Where(x => x.RecipientUsername == currentUsername && x.RecipientDeleted == false && x.SenderUsername == recipientUsername 
         || x.SenderUsername == currentUsername && x.SenderDeleted == false  && x.RecipientUsername == recipientUsername)
         .OrderBy(x => x.MessageSent)
+        .ProjectTo<MessageDTO>(mapper.ConfigurationProvider)
         .ToListAsync();
 
         var unreadMessages = messages.Where(x => x.DateRead == null && x.RecipientUsername == currentUsername).ToList();
@@ -81,7 +80,12 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
             }
         }
 
-        return mapper.Map<IEnumerable<MessageDTO>>(messages);
+        return messages;
+    }
+
+    public async Task<Group?> GetGroupForConnection(string connectionId)
+    {
+        return await context.Groups.Include(x => x.Connections).Where(x => x.Connections.Any(x => x.ConnectionId == connectionId)).FirstOrDefaultAsync();
     }
 
     public async Task<bool> SaveAllAsync()
