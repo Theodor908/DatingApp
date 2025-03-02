@@ -10,6 +10,8 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
 {
     public DbSet<UserLike> Likes { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<Connection> Connections { get; set; }
 
     // override conventions for entity framework
     protected override void OnModelCreating(ModelBuilder builder)
@@ -25,6 +27,7 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
             .WithOne(u => u.Role)
             .HasForeignKey(ur => ur.RoleId)
             .IsRequired();
+            
         builder.Entity<UserLike>()
             .HasKey(k => new {k.SourceUserId, k.TargetUserId});
         builder.Entity<UserLike>()
@@ -42,7 +45,6 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
             .HasOne(x => x.Recipient)
             .WithMany(m => m.MessagesRecieved)
             .OnDelete(DeleteBehavior.Restrict);
-
         builder.Entity<Message>()
             .HasOne(x => x.Sender)
             .WithMany(m => m.Messages)

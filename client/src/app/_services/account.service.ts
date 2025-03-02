@@ -5,6 +5,7 @@ import { User } from '../_models/user';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { LikesService } from './likes.service';
+import { PresenceService } from './presence.service';
 
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AccountService {
 
   private http = inject(HttpClient);
   private likeService = inject(LikesService); // if it is one way it is okay but dont put accountservice in likesservices because of ciruclar dependency
+  private presenceService = inject(PresenceService);
   baseUrl = environment.apiUrl; // <- important to be accurate
   currentUser = signal<User | null>(null);
   roles = computed(() => {
@@ -39,17 +41,12 @@ export class AccountService {
     );
   }
 
-  logout()
-  {
-    localStorage.removeItem('user');
-    this.currentUser.set(null);
-  }
-
+  
   register(model: any)
   {
     return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
       map(user => {
-          if(user)
+        if(user)
           {
             this.setCurrentUser(user);
           }
@@ -58,12 +55,19 @@ export class AccountService {
       )
     );
   }
-
+  
   setCurrentUser(user: User)
   {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     this.likeService.getLikeIds();
+    this.presenceService.createHubConnection(user);
   }
-
+  
+  logout()
+  {
+    localStorage.removeItem('user');
+    this.currentUser.set(null);
+    this.presenceService.stopHubConnection();
+  }
 }

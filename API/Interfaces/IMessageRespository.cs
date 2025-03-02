@@ -13,4 +13,9 @@ public interface IMessageRespository
     Task<PagedList<MessageDTO>> GetMessagesForUser([FromQuery] MessageParams messageParams);
     Task<IEnumerable<MessageDTO>> GetMessageThread(string currentUsername, string recipientUsername);
     Task<bool> SaveAllAsync(); 
+    // trackers to decide if messages are read based on live groups
+    void AddGroup(Group group);
+    void RemoveConnection(Connection connection);
+    Task<Connection?> GetConnection(string connectionId);
+    Task<Group?> GetMessageGroup(string groupName);
 }
