@@ -485,4 +485,4 @@ $RECYCLE.BIN/
 
 #ssl files
 *.pem
-/ssl
+ssl/
