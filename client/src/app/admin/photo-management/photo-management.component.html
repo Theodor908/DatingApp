@@ -1,1 +1,48 @@
-<p>photo-management works!</p>
+<div class="row">
+  <div class="text-center mt-3">
+    <h2>Photos waiting for approval - {{adminService.paginatedResult()?.pagination?.totalItems}}</h2>
+  </div>
+  @if(adminService.paginatedResult()?.items?.length !== null)
+  {
+  <div class="container mt-3 d-flex">
+    @for(photo of adminService.paginatedResult()?.items; track photo.id)
+    {
+      <div class="col-3">
+        <div class="card mb-3 me-2">
+          <div class="card-img-wrapper">
+            <img [src]="photo.url" alt="{{'photo of ' + photo.username + ' to be approved'}}" class="card-img-top">
+            <div class="text-center img-text">
+              <span class="text-danger">Awaiting approval</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Photo of {{photo.username}} </h5>
+          </div>
+          <div class="card-footer">
+            <div class="btn-group d-flex">
+              <button (click)="approvePhoto(photo.id)" class="btn btn-success">Approve</button>
+              <button (click)="rejectPhoto(photo.id)" class="btn btn-danger">Reject</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  }
+    @if(adminService.paginatedResult()?.pagination)
+    {
+      <div class="d-flex justify-content-center">
+        <pagination
+          [boundaryLinks]="true"
+          [totalItems]="adminService.paginatedResult()?.pagination!.totalItems"
+          [itemsPerPage]="adminService.paginatedResult()?.pagination!.itemsPerPage"
+          (pageChanged)="pageChanged($event)"
+          [(ngModel)]="adminService.paginatedResult()?.pagination!.currentPage"
+          [maxSize]="10"
+          previousText="&lsaquo;"
+          nextText="&rsaquo;"
+          firstText="&laquo;"
+          lastText="&raquo;">
+        </pagination>
+      </div>
+     }

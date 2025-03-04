@@ -36,6 +36,11 @@ public class Seed
         foreach(var user in users)
         {
             user.UserName = user.UserName!.ToLower();
+            var photo = user.Photos.FirstOrDefault();
+            if(photo != null)
+            {
+                photo.IsApproved = true;
+            }
             await userManager.CreateAsync(user, "Pa$$w0rd");
             await userManager.AddToRoleAsync(user, "Member");
         }
@@ -53,6 +58,6 @@ public class Seed
         };
 
         await userManager.CreateAsync(admin, "Pa$$w0rd");
-        await userManager.AddToRolesAsync(admin, new[] {"Admin", "Moderator"});
+        await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"]);
     }
 }

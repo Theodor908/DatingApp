@@ -16,8 +16,6 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers([FromQuery] UserParams userParams)
     {
-        Console.WriteLine(User.IsInRole("Admin"));
-        Console.WriteLine(User.GetUsername());
         userParams.CurrentUsername = User.GetUsername();
         var users = await unitOfWork.UserRepository.GetMembersAsync(userParams);
         Response.AddPaginationHeader(users.CurrentPage, users);
@@ -26,7 +24,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
     [HttpGet("{username}")] // api/users/username
     public async Task<ActionResult<MemberDTO>> GetUser(string username)
     {
-        var user = await unitOfWork.UserRepository.GetMemberAsync(username);
+        var user = await unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser: User.GetUsername() == username);
 
         if (user == null)
         {
@@ -79,11 +77,6 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
             PublicId = result.PublicId
         };
 
-        if(user.Photos.Count == 0) // if the user has no photos set the new photo as main
-        {
-            photo.IsMain = true;
-        }
-
         user.Photos.Add(photo);
 
         if(await unitOfWork.Complete())
@@ -130,7 +123,7 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
     [HttpDelete("delete-photo/{photoId:int}")]
     public async Task<ActionResult> DeletePhoto(int photoId)
     {
-        var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
+        var user = await unitOfWork.UserRepository.GetUserByPhotoIdAsync(photoId);
         
         if(user == null)
         {

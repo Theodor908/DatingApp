@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RegisterComponent } from "../register/register.component";
-import { MembersService } from '../_services/members.service';
+import { AccountService } from '../_services/account.service';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -11,7 +11,7 @@ import { MembersService } from '../_services/members.service';
 export class HomeComponent {
 
 registerMode = false;
-memberService = inject(MembersService);
+accountService = inject(AccountService);
 
   registerToggle()
   {

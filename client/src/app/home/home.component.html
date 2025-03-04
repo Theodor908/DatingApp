@@ -1,6 +1,6 @@
 <div class="container mt-5">
   <div style="text-align: center;">
-  @if(memberService.user === null)
+  @if(accountService.currentUser() === null)
   {
     @if(!registerMode) {
       <h1>Find your match</h1>
@@ -21,7 +21,7 @@
 
   }
   @else {
-    <h1>Welcome back {{memberService.user.knownAs}}</h1>
+    <h1>Welcome back {{accountService.currentUser()?.knownAs}}</h1>
     <p>Find your match</p>
   }
   </div>
