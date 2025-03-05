@@ -12,16 +12,17 @@
           <li class="nav-item">
             <a class="nav-link" routerLink = "/lists" routerLinkActive="true">Lists</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink = "/messages" routerLinkActive="true">Messages</a>
+          <li class="nav-item" [class.animate]="messageService.unreadMessages() !== 0">
+            <a class="nav-link" routerLink = "/messages" routerLinkActive="true">Messages {{messageService.unreadMessages() !== 0 ? '(' + messageService.unreadMessages() + ')' : ''}}</a>
           </li>
           <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
             <a class="nav-link" routerLink = "/admin" routerLinkActive="true">Admin</a>
           </li>
-        }
-        <li class="nav-item">
+        <li class="nav-item" *appHasRole="['Admin']">
           <a class="nav-link" routerLink = "/errors" routerLinkActive="true">Errors</a>
         </li>
+      }
+
       </ul>
       @if(accountService.currentUser()){ <!-- user logged in -->
         <img class="me-2" src="{{accountService.currentUser()?.photoUrl || './assets/user.png'}}" alt="user main image">

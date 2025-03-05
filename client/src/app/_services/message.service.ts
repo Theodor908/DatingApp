@@ -18,6 +18,7 @@ export class MessageService {
     hubConnection?: HubConnection;
     paginatedResult = signal<PaginatedResult<Message[]> | null>(null);
     messageThread = signal<Message[]>([]);
+    unreadMessages = signal<number>(0);
 
     createHubConnection(user: User, otherUsername: string)
     {
@@ -31,6 +32,14 @@ export class MessageService {
 
       this.hubConnection.on('ReceiveMessageThread', messages => {
         this.messageThread.set(messages);
+        this.messageThread.update(messages => {
+          messages.forEach(message => {
+            if(!message.dateRead)
+              message.dateRead = new Date(Date.now());
+          });
+          this.getUnreadMessagesCount();
+          return messages;
+        });
       });
 
       this.hubConnection.on('NewMessage', message => {
@@ -45,6 +54,7 @@ export class MessageService {
               if(!message.dateRead)
                 message.dateRead = new Date(Date.now());
             });
+            this.getUnreadMessagesCount();
             return messages;
           })
         }
@@ -67,6 +77,13 @@ export class MessageService {
         .subscribe({
           next: response => setPaginatedResponse(response, this.paginatedResult)
         });
+    }
+
+    getUnreadMessagesCount()
+    {
+      return this.http.get<number>(this.baseUrl + 'messages/unread-count').subscribe({
+        next: count => this.unreadMessages.set(count)
+      });
     }
 
     getMessageThread(username: string)

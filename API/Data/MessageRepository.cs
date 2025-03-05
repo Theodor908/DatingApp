@@ -8,6 +8,7 @@ using API.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 public class MessageRepository(DataContext context, IMapper mapper) : IMessageRespository
 {
@@ -79,6 +80,12 @@ public class MessageRepository(DataContext context, IMapper mapper) : IMessageRe
         }
 
         return await query.ProjectTo<MessageDTO>(mapper.ConfigurationProvider).ToListAsync();
+    }
+
+    public async Task<int> GetUnreadMessagesCount(string username)
+    {
+        var query = context.Messages.Where(x => x.RecipientUsername == username && x.SenderUsername != username && x.DateRead == null);
+        return await query.CountAsync();
     }
 
     public async Task<Group?> GetGroupForConnection(string connectionId)

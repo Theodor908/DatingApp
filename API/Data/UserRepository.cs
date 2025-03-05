@@ -51,10 +51,9 @@ public class UserRespository(DataContext context, IMapper mapper) : IUserReposit
     public async Task<AppUser?> GetUserByPhotoIdAsync(int photoId)
     {
         return await context.Users
-        .Include(x => x.Photos)
         .IgnoreQueryFilters()
-        .Where(x => x.Photos.Any(x => x.Id == photoId))
-        .FirstOrDefaultAsync();
+        .Include(u => u.Photos)
+        .FirstOrDefaultAsync(u => u.Photos.Any(p => p.Id == photoId));
     }
 
     public async Task<AppUser?> GetUserByIdAsync(int id)

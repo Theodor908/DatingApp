@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using API.Data;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
@@ -79,17 +80,18 @@ public class AdminController(UserManager<AppUser> userManager, IUnitOfWork unitO
         }
 
         photo.IsApproved = true;
-        var user = await unitOfWork.UserRepository.GetUserByIdAsync(photo.AppUserId);
+        var user = await unitOfWork.UserRepository.GetUserByPhotoIdAsync(photo.Id);
+
         if(user == null)
         {
             return NotFound("User not found");
         }
 
-        //get main photo of the user if there is one
-        if(!user.Photos.Any(p => p.IsMain))
+        if(user.Photos.Any(p => p.IsMain) == false)
         {
             photo.IsMain = true;
         }
+
         if(await unitOfWork.Complete())
         {
             return Ok();

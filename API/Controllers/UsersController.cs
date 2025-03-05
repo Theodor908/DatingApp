@@ -109,8 +109,9 @@ public class UsersController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoServi
         {
             currentMain.IsMain = false;
         }
-        // set the new photo as main
+
         photo.IsMain = true;
+
 
         if(await unitOfWork.Complete())
         {

@@ -105,7 +105,7 @@ public class MessageHub(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<Pres
 
     private async Task<Group> RemoveFromMessageGroup()
     {
-        var group = await unitOfWork.MessageRepository.GetMessageGroup(Context.ConnectionId);
+        var group = await unitOfWork.MessageRepository.GetGroupForConnection(Context.ConnectionId);
         var connection = group?.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
         if(connection != null && group != null)
         {

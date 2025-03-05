@@ -49,6 +49,13 @@ public class MessagesController(IUnitOfWork unitOfWork, IMapper mapper) : BaseAP
         return Ok(await unitOfWork.MessageRepository.GetMessageThread(currentUsername, username));
     }
 
+    [HttpGet("unread-count")]
+    public async Task<ActionResult<int>> GetUnreadMessagesCount()
+    {
+        var currentUsername = User.GetUsername();
+        return Ok(await unitOfWork.MessageRepository.GetUnreadMessagesCount(currentUsername));
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteMessage(int id)
     {

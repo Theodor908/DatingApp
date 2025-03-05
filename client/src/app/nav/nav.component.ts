@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
 import { AccountService } from '../_services/account.service';
@@ -6,6 +6,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HasRoleDirective } from '../_directives/has-role.directive';
+import { MessageService } from '../_services/message.service';
 
 @Component({
   selector: 'app-nav',
@@ -13,11 +14,23 @@ import { HasRoleDirective } from '../_directives/has-role.directive';
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css'
 })
-export class NavComponent {
+export class NavComponent{
   accountService =  inject(AccountService);
+  messageService = inject(MessageService);
   private router = inject(Router);
   private toastr = inject(ToastrService);
+  container = 'Inbox';
+  pageNumber = 1;
+  pageSize = 5;
   model: any = {};
+
+  constructor()
+  {
+    effect(() => {
+      this.messageService.getUnreadMessagesCount();
+    });
+  }
+
   login()
   {
     this.accountService.login(this.model).subscribe({

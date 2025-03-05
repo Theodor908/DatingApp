@@ -25,8 +25,10 @@
             <p>{{member.age}}</p>
           </div>
           <div>
-            <strong>Last active:</strong>
-            <p>{{member.lastActive | timeago}}</p>
+            @if(accountService.currentUser()?.username !== member.username)
+            {
+              <p>{{member.lastActive | timeago}}</p>
+            }
           </div>
           <div>
             <strong>Member since:</strong>

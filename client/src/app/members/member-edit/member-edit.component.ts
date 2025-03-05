@@ -26,7 +26,7 @@ export class MemberEditComponent implements OnInit{
   }
   member?: Member;
 
-  private accountService = inject(AccountService);
+  accountService = inject(AccountService);
   private memberService = inject(MembersService);
   private toastr = inject(ToastrService);
 

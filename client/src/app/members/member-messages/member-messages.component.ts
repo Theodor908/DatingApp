@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, inject, input, viewChild, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, inject, input, OnDestroy, viewChild, ViewChild } from '@angular/core';
 import { MessageService } from '../../_services/message.service';
 import { TimeagoModule } from 'ngx-timeago';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -22,6 +22,12 @@ export class MemberMessagesComponent implements AfterViewChecked{
       this.messageForm?.reset();
       this.scrollToBottom();
     });
+  }
+
+  canDisplayTime(date: Date): boolean
+  {
+    // if the message has been sent more than a hour ago dont display the time
+    return (new Date().getTime() - new Date(date).getTime()) < 3600000;
   }
 
   ngAfterViewChecked(): void {
