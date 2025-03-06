@@ -27,7 +27,8 @@ export class NavComponent{
   constructor()
   {
     effect(() => {
-      this.messageService.getUnreadMessagesCount();
+      if(this.accountService.currentUser() !== null)
+        this.messageService.getUnreadMessagesCount();
     });
   }
 

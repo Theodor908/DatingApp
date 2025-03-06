@@ -486,3 +486,5 @@ $RECYCLE.BIN/
 #ssl files
 *.pem
 ssl/
+wwwroot/
+*.yaml
