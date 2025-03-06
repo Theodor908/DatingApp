@@ -15,13 +15,15 @@ export class MemberMessagesComponent implements AfterViewChecked{
   messageService = inject(MessageService);
   username = input.required<string>();
   messageContent : string = '';
+  loading = false;
 
   sendMessage()
   {
+    this.loading = true;
     this.messageService.sendMessage(this.username(), this.messageContent)?.then(() => {
       this.messageForm?.reset();
       this.scrollToBottom();
-    });
+    }).finally(() => this.loading = false);
   }
 
   canDisplayTime(date: Date): boolean
